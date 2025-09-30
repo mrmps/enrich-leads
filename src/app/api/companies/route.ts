@@ -4,6 +4,8 @@ import { companies } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { RESEARCH_PROMPT } from '@/lib/research-prompt';
 
+export const runtime = 'edge';
+
 export async function POST(request: NextRequest) {
   try {
     const { url } = await request.json();

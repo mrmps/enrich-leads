@@ -4,6 +4,8 @@ import { companies } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import crypto from 'crypto';
 
+export const runtime = 'edge';
+
 function verifyWebhookSignature(
   body: string,
   webhookId: string,
