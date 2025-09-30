@@ -2,22 +2,38 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { companies } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import crypto from 'crypto';
 
 export const runtime = 'edge';
 
-function verifyWebhookSignature(
+async function verifyWebhookSignature(
   body: string,
   webhookId: string,
   webhookTimestamp: string,
   signature: string,
   secret: string
-): boolean {
+): Promise<boolean> {
   const payload = `${webhookId}.${webhookTimestamp}.${body}`;
-  const expectedSignature = crypto
-    .createHmac('sha256', secret)
-    .update(payload)
-    .digest('base64');
+  
+  // Use Web Crypto API (Edge Runtime compatible)
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  
+  const signatureBuffer = await crypto.subtle.sign(
+    'HMAC',
+    key,
+    encoder.encode(payload)
+  );
+  
+  // Convert to base64
+  const expectedSignature = btoa(
+    String.fromCharCode(...new Uint8Array(signatureBuffer))
+  );
 
   // Handle multiple space-delimited signatures
   const signatures = signature.split(' ');
@@ -25,16 +41,8 @@ function verifyWebhookSignature(
     const parts = sig.split(',');
     const sigValue = parts.length > 1 ? parts[1] : sig;
     
-    try {
-      if (crypto.timingSafeEqual(
-        Buffer.from(sigValue),
-        Buffer.from(expectedSignature)
-      )) {
-        return true;
-      }
-    } catch {
-      // Continue to next signature
-      continue;
+    if (sigValue === expectedSignature) {
+      return true;
     }
   }
   return false;
@@ -55,7 +63,7 @@ export async function POST(request: NextRequest) {
     // Verify signature only if secret is configured
     if (process.env.WEBHOOK_SECRET && process.env.WEBHOOK_SECRET !== 'your_webhook_secret_from_parallel_settings') {
       if (webhookId && webhookTimestamp && webhookSignature) {
-        const isValid = verifyWebhookSignature(
+        const isValid = await verifyWebhookSignature(
           rawBody,
           webhookId,
           webhookTimestamp,
