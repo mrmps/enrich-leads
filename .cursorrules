@@ -1,0 +1,7 @@
+1. always use pnpm. always
+2. never start a dev env. assume it's already running
+3. never start a build. it kills our dev env
+4. you can execute db commands. go nuts!
+5. keep your plan and actions so far in a plan.md file. update it as you go.
+6. don'e be afraid to make web searches
+7. test that everything works. note that a parallel request is VERY slow, and can last several minutes. you might need to wait for it. for testing, use the fastest parallel tier (I'll change it manually later)

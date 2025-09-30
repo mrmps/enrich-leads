@@ -3,25 +3,38 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "dev": "./start-dev.sh",
+    "dev:simple": "next dev --turbopack",
+    "build": "next build",
+    "build:cf": "next build && npx @cloudflare/next-on-pages",
+    "preview": "wrangler pages dev .vercel/output/static",
+    "deploy": "pnpm build:cf && wrangler pages deploy .vercel/output/static",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "cf:tunnel": "cloudflared tunnel run lead-finder"
   },
   "dependencies": {
+    "@tanstack/react-table": "^8.21.3",
+    "next": "15.5.4",
+    "openai": "^5.23.1",
     "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "next": "15.5.4"
+    "react-dom": "19.1.0"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@cloudflare/next-on-pages": "^1.13.16",
+    "@eslint/eslintrc": "^3",
+    "@neondatabase/serverless": "^1.0.1",
+    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
+    "dotenv": "^17.2.2",
+    "drizzle-kit": "^0.31.5",
+    "drizzle-orm": "^0.44.5",
     "eslint": "^9",
     "eslint-config-next": "15.5.4",
-    "@eslint/eslintrc": "^3"
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "wrangler": "^4.40.2"
   }
 }
