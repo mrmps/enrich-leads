@@ -18,6 +18,6 @@ export const db = new Proxy({} as ReturnType<typeof getDb>, {
     if (!_db) {
       _db = getDb();
     }
-    return (_db as any)[prop];
+    return (_db as Record<string, unknown>)[prop as string];
   }
 });
