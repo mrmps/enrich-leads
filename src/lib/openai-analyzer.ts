@@ -7,6 +7,7 @@ const openai = new OpenAI({
 interface AnalysisResult {
   fitScore: string;
   pitch: string;
+  employeeCount?: string;
 }
 
 export async function analyzeCompanyFit(researchData: unknown): Promise<AnalysisResult | null> {
@@ -20,6 +21,7 @@ export async function analyzeCompanyFit(researchData: unknown): Promise<Analysis
 
 1. A fit score from 1-10 for Inference.net (where 10 = perfect fit, 1 = no fit)
 2. A concise, compelling 2-3 sentence pitch for why Inference.net would be valuable to them
+3. The company's employee count (if available in the research data)
 
 Research Context:
 ${JSON.stringify(researchData, null, 2)}
@@ -32,10 +34,14 @@ Inference.net offers:
 - Private and fully owned models
 - Best for companies spending >$50k/month on LLM APIs
 
+For employee count, extract the number if available, or provide a range (e.g., "50-100", "1000-5000", "10000+").
+If not available, set as null.
+
 Respond in JSON format only:
 {
   "fitScore": "X/10",
-  "pitch": "Your pitch here"
+  "pitch": "Your pitch here",
+  "employeeCount": "number or range or null"
 }`;
 
     const completion = await openai.chat.completions.create({
@@ -61,7 +67,8 @@ Respond in JSON format only:
     const result = JSON.parse(content);
     return {
       fitScore: result.fitScore || 'N/A',
-      pitch: result.pitch || 'Unable to generate pitch'
+      pitch: result.pitch || 'Unable to generate pitch',
+      employeeCount: result.employeeCount || null
     };
   } catch (error) {
     console.error('Error analyzing company fit with OpenAI:', error);

@@ -9,6 +9,7 @@ export const companies = pgTable('companies', {
   error: text('error'), // Store any error messages
   fitScore: text('fit_score'), // OpenAI extracted score (1-10)
   pitch: text('pitch'), // OpenAI generated pitch
+  employeeCount: text('employee_count'), // Employee count range extracted from research
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });

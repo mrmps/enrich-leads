@@ -123,6 +123,7 @@ export async function POST(request: NextRequest) {
       // Analyze with OpenAI to get fit score and pitch
       let fitScore = null;
       let pitch = null;
+      let employeeCount = null;
       
       if (process.env.OPENAI_API_KEY) {
         try {
@@ -131,6 +132,7 @@ export async function POST(request: NextRequest) {
           if (analysis) {
             fitScore = analysis.fitScore;
             pitch = analysis.pitch;
+            employeeCount = analysis.employeeCount || null;
           }
         } catch (error) {
           console.error('OpenAI analysis failed:', error);
@@ -145,6 +147,7 @@ export async function POST(request: NextRequest) {
           response: result.output,
           fitScore,
           pitch,
+          employeeCount,
           updatedAt: new Date(),
         })
         .where(eq(companies.id, companyId));

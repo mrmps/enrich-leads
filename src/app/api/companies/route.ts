@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify({
         input: `Research this company: ${url}\n\n${RESEARCH_PROMPT}`,
-        processor: 'ultra', // Using base processor (faster, suitable for testing)
+        processor: 'base',
         ...(process.env.WEBHOOK_URL?.startsWith('https://') && {
           webhook: {
             url: process.env.WEBHOOK_URL,

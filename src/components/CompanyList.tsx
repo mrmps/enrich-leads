@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import type { Company } from '@/db/schema';
+import { ExportControls } from './ExportControls';
 import {
   useReactTable,
   getCoreRowModel,
@@ -112,6 +113,29 @@ export function CompanyList() {
             title={score}
           >
             {score}
+          </div>
+        );
+      },
+    },
+    {
+      id: 'employeeCount',
+      accessorKey: 'employeeCount',
+      header: 'Employees',
+      size: 100,
+      minSize: 80,
+      maxSize: 120,
+      cell: ({ getValue, row }) => {
+        const count = getValue() as string | null;
+        if (!count) {
+          return <span className="text-gray-400 text-sm">—</span>;
+        }
+        return (
+          <div
+            className="text-sm font-medium text-gray-700 cursor-pointer hover:text-blue-600"
+            onClick={() => setSelectedCell({ row: row.original, field: 'Employee Count', value: count })}
+            title={count}
+          >
+            {count}
           </div>
         );
       },
@@ -312,15 +336,19 @@ export function CompanyList() {
   }
 
   return (
-    <div className="flex gap-4 h-[calc(100vh-300px)]">
-      {/* DataGrid */}
-      <div className={`${selectedCell ? 'w-2/3' : 'w-full'} transition-all duration-300 flex flex-col`}>
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-semibold">Company Research</h2>
-          <span className="text-sm text-gray-500">
-            {companies.length} {companies.length === 1 ? 'company' : 'companies'} tracked
-          </span>
-        </div>
+    <div>
+      {/* Export Controls */}
+      <ExportControls />
+      
+      <div className="flex gap-4 h-[calc(100vh-300px)]">
+        {/* DataGrid */}
+        <div className={`${selectedCell ? 'w-2/3' : 'w-full'} transition-all duration-300 flex flex-col`}>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-semibold">Company Research</h2>
+            <span className="text-sm text-gray-500">
+              {companies.length} {companies.length === 1 ? 'company' : 'companies'} tracked
+            </span>
+          </div>
 
         <div className="overflow-auto rounded-lg border border-gray-200 shadow-sm bg-white" style={{ maxHeight: 'calc(100vh - 350px)' }}>
           <table className="w-full divide-y divide-gray-200" style={{ tableLayout: 'fixed', minWidth: '100%' }}>
@@ -419,6 +447,7 @@ export function CompanyList() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }
